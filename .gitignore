@@ -36,3 +36,13 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+node_modules
+.bun
+.next
+dist
+.expo
+.expo-shared
+.env
+coverage
+turbo
