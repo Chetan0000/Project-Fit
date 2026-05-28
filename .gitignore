@@ -46,3 +46,5 @@ dist
 .env
 coverage
 turbo
+.claude
+.vscode
