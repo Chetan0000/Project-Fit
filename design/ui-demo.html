@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FitForge UI demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+/* ─────────────────────────────────────────────────────────────────────────
+   FitForge UI demo. Direction: "True-black flat" (seed 1169604551)
+   Move: elevation by lightness alone; colour confined to data marks.
+   Dark is the product theme; light is a derived counterpart (same structure).
+   ───────────────────────────────────────────────────────────────────────── */
+:root{
+  --font:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --radius-card:20px; --radius-control:999px;
+  --phone-w:390px; --phone-h:844px;
+  --gap:14px; --pad:18px;
+  --fs-title:22px; --fs-section:16px; --fs-kpi:22px; --fs-body:14px; --fs-small:12px;
+  --ease-out:cubic-bezier(.22,1,.36,1); --t-press:120ms; --t-hover:150ms; --t-ui:200ms;
+  --panel-border-w:0px;
+}
+:root[data-theme="dark"]{
+  --ground:#000000; --device:#0b0b0b; --surface:#111111; --raised:#2a2a2a; --active:#222222;
+  --border:#1a1a1a; --rule:#161616; --control:#444444;
+  --text:#ffffff; --muted:#b4b4b4; --faint:#949494;
+  --accent:#c6f24e; --positive:#c6f24e; --negative:#e5484d; --warning:#e5a93b;
+  --primary:#ffffff; --primary-ink:#000000;
+  --grid:#2b2b2b; --skel:#1e1e1e;
+  --tab-idle:#bbbbbb; --accent-ink:#000000;
+}
+:root[data-theme="light"]{
+  --ground:#e9e9e4; --device:#deddd7; --surface:#f5f5f1; --raised:#edece6; --active:#e4e3dc;
+  --border:#dbdbd4; --rule:#e6e6df; --control:#bfc1b8;
+  --text:#141414; --muted:#565a53; --faint:#63665f;
+  --accent:#4d7c0f; --positive:#4d7c0f; --negative:#b02026; --warning:#8a3f0e;
+  --primary:#141414; --primary-ink:#f5f5f1;
+  --grid:#dcdcd5; --skel:#e3e3dc;
+  --tab-idle:#63665f; --accent-ink:#ffffff;
+  --panel-border-w:1px;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--ground); color:var(--text);
+  font:var(--fs-body)/20px var(--font); -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,p,ol,ul,figure{margin:0}
+ol,ul{padding:0;list-style:none}
+button,input{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.num{font-variant-numeric:tabular-nums}
+
+/* ── board chrome ───────────────────────────────────────────────────────── */
+.board{max-width:1320px;margin:0 auto;padding:28px 24px 80px}
+.board > header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:8px}
+.board h1{font-size:28px;line-height:1.15;font-weight:600;letter-spacing:-.02em}
+.board .sub{color:var(--muted);margin-top:6px;max-width:60ch}
+.brandline{display:flex;align-items:center;gap:10px}
+.mark{width:22px;height:22px;color:var(--accent);flex:none}
+.themebar{display:inline-flex;padding:2px;border-radius:8px;background:var(--raised)}
+.themebar button{height:30px;padding:0 14px;border-radius:6px;color:var(--muted);font-weight:500}
+.themebar button[aria-pressed="true"]{background:var(--surface);color:var(--text)}
+
+.gallery{display:flex;flex-wrap:wrap;gap:32px;margin-top:28px;align-items:flex-start;justify-content:center}
+figure.phone{width:var(--phone-w);max-width:100%;min-width:0}
+.device{background:var(--device);border:1px solid var(--border);border-radius:44px;padding:10px;max-width:100%}
+.screen{
+  position:relative;height:var(--phone-h);background:var(--ground);border-radius:35px;
+  display:flex;flex-direction:column;overflow:hidden;min-width:0;
+}
+figcaption{margin-top:10px;padding-left:6px;color:var(--muted);font-size:var(--fs-small)}
+figcaption b{color:var(--text);font-weight:500}
+@media (max-width:900px){
+  figure.phone{flex:1 1 100%;width:100%;min-width:0}
+  .screen{height:auto;min-height:640px}
+}
+
+/* ── phone shell ────────────────────────────────────────────────────────── */
+.statusbar{display:flex;align-items:center;justify-content:space-between;height:44px;padding:0 22px;font-size:12px;font-weight:500;color:var(--text);flex:none}
+.statusbar .osmarks{display:flex;align-items:center;gap:6px;color:var(--muted)}
+.sig{display:block;width:16px;height:10px;border:1.2px solid currentColor;border-radius:2.5px;position:relative}
+.sig::after{content:"";position:absolute;left:1.5px;top:1.5px;bottom:1.5px;width:8px;background:currentColor;border-radius:1px}
+.appbar{display:flex;align-items:center;justify-content:space-between;gap:12px;height:48px;padding:0 20px;flex:none}
+.appbar .name{display:flex;align-items:center;gap:9px;font-weight:600;letter-spacing:-.01em}
+.appbar .screenname{font-weight:600}
+.iconbtn{width:34px;height:34px;display:grid;place-items:center;border-radius:999px;color:var(--muted)}
+.iconbtn:hover{background:var(--raised);color:var(--text)}
+.body{flex:1;min-height:0;padding:4px var(--pad) 18px;overflow:hidden;display:flex;flex-direction:column;gap:var(--gap)}
+.body.center{justify-content:center;gap:20px;padding-bottom:34px}
+
+/* ── type ───────────────────────────────────────────────────────────────── */
+.screen-title{font-size:var(--fs-title);line-height:1.2;font-weight:600;letter-spacing:-.015em}
+.sub{color:var(--muted);font-size:var(--fs-body)}
+.meta{color:var(--faint);font-size:var(--fs-small)}
+.label{color:var(--muted);font-size:var(--fs-small)}
+.lead{color:var(--muted);font-size:15px;line-height:22px}
+
+/* ── controls ───────────────────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:36px;padding:0 18px;border-radius:var(--radius-control);border:1px solid var(--control);background:transparent;font-weight:500;transition:background-color var(--t-hover) ease,transform var(--t-press) var(--ease-out)}
+.btn:hover{background:var(--raised)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--primary);color:var(--primary-ink);border-color:transparent;font-weight:600}
+.btn.primary:hover{background:var(--primary);opacity:.9}
+.btn.block{width:100%;height:48px}
+.btn.block.big{height:52px;font-size:15px}
+.btn.sm{height:34px;padding:0 14px}
+.btn[aria-disabled="true"]{opacity:.4;cursor:not-allowed}
+
+.field{display:grid;gap:8px}
+.field label{font-weight:500}
+.field .hint{color:var(--muted);font-size:var(--fs-small)}
+.input{height:46px;padding:0 14px;border:1px solid var(--control);border-radius:var(--radius-card);background:var(--surface);width:100%}
+.input::placeholder{color:var(--faint)}
+
+/* ── panels & rows ──────────────────────────────────────────────────────── */
+.panel{background:var(--surface);border:var(--panel-border-w) solid var(--border);border-radius:var(--radius-card);padding:16px}
+.rows{display:grid;background:var(--surface);border:var(--panel-border-w) solid var(--border);border-radius:var(--radius-card);overflow:hidden}
+.rows .row{display:flex;align-items:center;gap:12px;min-height:56px;padding:10px 16px}
+.rows .row + .row{border-top:1px solid var(--rule)}
+.row .grow{flex:1;min-width:0}
+.row .rname{font-weight:500}
+.row .rsub{color:var(--muted);font-size:13px;margin-top:2px}
+.row .rval{font-weight:500}
+.done{color:var(--accent)}
+.tick{width:15px;height:15px;flex:none;color:var(--accent)}
+
+/* ── KPI strip (one container, hairlines) ───────────────────────────────── */
+.kpis{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);background:var(--surface);border:var(--panel-border-w) solid var(--border);border-radius:var(--radius-card)}
+.kpi{padding:14px 16px;min-width:0}
+.kpi + .kpi{border-left:1px solid var(--border)}
+.kpi-label{color:var(--muted);font-size:13px}
+.kpi-value{margin-top:5px;font-size:var(--fs-kpi);line-height:1.1;font-weight:500;letter-spacing:-.01em}
+.kpi-value small{font-size:.6em;color:var(--muted);font-weight:400}
+.kpi-value .pos{color:var(--positive)}
+.kpi-value .neg{color:var(--negative)}
+
+/* ── cycle strip (the product's signature element) ──────────────────────── */
+.cycle{display:flex;flex-wrap:wrap;gap:8px}
+.cycle .day{flex:none;padding:7px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--border);color:var(--muted);font-size:13px;font-weight:500;white-space:nowrap}
+.cycle .day.today{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.cycle .day.rest{color:var(--faint)}
+
+/* ── split builder ──────────────────────────────────────────────────────── */
+.splits{display:grid;gap:2px}
+.split{display:flex;align-items:center;gap:12px;min-height:52px;padding:8px 14px;background:var(--surface);border-radius:var(--radius-card)}
+.grip{color:var(--faint);flex:none;letter-spacing:-2px;font-size:14px;line-height:1}
+.split .n{flex:1;min-width:0}
+.split .n b{font-weight:500;display:block}
+.split .n span{color:var(--muted);font-size:13px}
+.split .tag{color:var(--muted);font-size:13px}
+
+/* ── progress bar (true ratio, both ends labelled) ──────────────────────── */
+.progress{display:grid;gap:7px}
+.progress .track{height:4px;border-radius:999px;background:var(--raised);overflow:hidden}
+.progress .fill{height:100%;background:var(--accent);border-radius:999px}
+.progress .ends{display:flex;justify-content:space-between;color:var(--muted);font-size:var(--fs-small)}
+
+/* ── sets ───────────────────────────────────────────────────────────────── */
+.sets{display:grid;gap:8px}
+.set{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:var(--radius-card);background:var(--surface)}
+.set .idx{color:var(--faint);width:16px;font-size:var(--fs-small)}
+.set .fig{flex:1;font-weight:500}
+.set .fig small{color:var(--muted);font-weight:400}
+.steppers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stepper{background:var(--surface);border:var(--panel-border-w) solid var(--border);border-radius:var(--radius-card);padding:10px 12px;display:grid;gap:8px}
+.stepper .rowline{display:flex;align-items:center;justify-content:space-between}
+.stepper .val{font-size:18px;font-weight:600}
+.iconbtn.sq{width:30px;height:30px;border-radius:9px;background:var(--raised);color:var(--text)}
+.iconbtn.sq:hover{background:var(--active)}
+
+/* ── chart ──────────────────────────────────────────────────────────────── */
+.chart{width:100%;height:auto;display:block}
+.chart .gridline{stroke:var(--grid);stroke-width:1}
+.chart .axis{fill:var(--faint);font-size:11px;font-family:var(--font)}
+.chart .bar{fill:var(--accent)}
+.chart .baseline{stroke:var(--control);stroke-width:1}
+
+/* ── tab bar ────────────────────────────────────────────────────────────── */
+.tabbar{display:flex;align-items:stretch;height:66px;padding:0 8px 8px;flex:none;border-top:1px solid var(--border)}
+.tabbar a{flex:1;display:flex;align-items:center;justify-content:center;color:var(--tab-idle);font-size:13px;font-weight:500}
+.tabbar a[aria-current="page"]{color:var(--text);font-weight:600}
+.homeind{display:flex;justify-content:center;flex:none;padding:4px 0 10px}
+.homeind i{width:120px;height:5px;border-radius:999px;background:var(--raised)}
+
+.avatar{width:42px;height:42px;border-radius:999px;background:var(--raised);display:grid;place-items:center;font-weight:600;flex:none}
+.previewrow{display:flex;align-items:center;gap:12px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<main class="board">
+  <header>
+    <div>
+      <div class="brandline">
+        <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5M7.5 6.5v11M16.5 6.5v11M20 9.5v5M7.5 12h9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <h1>FitForge</h1>
+      </div>
+      <p class="sub">Redesign preview: one direction, six screens, dark and light. A rolling Push / Pull / Legs cycle instead of the calendar.</p>
+    </div>
+    <div class="themebar" role="group" aria-label="Theme">
+      <button type="button" data-set-theme="dark" aria-pressed="true">Dark</button>
+      <button type="button" data-set-theme="light" aria-pressed="false">Light</button>
+    </div>
+  </header>
+
+  <div class="gallery">
+
+    <!-- 1 ── Welcome ───────────────────────────────────────────────────── -->
+    <figure class="phone">
+      <div class="device"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="osmarks"><span class="sig"></span></span></div>
+        <div class="body center">
+          <svg class="mark" style="width:34px;height:34px" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5M7.5 6.5v11M16.5 6.5v11M20 9.5v5M7.5 12h9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <h2 class="screen-title" style="font-size:30px">Track the cycle,<br />not the week</h2>
+          <p class="lead">FitForge runs your Push / Pull / Legs split as a rolling cycle. Miss a day and the whole plan shifts with you, no resetting to Monday.</p>
+          <div class="cycle" aria-label="Cycle preview">
+            <span class="day">Push A</span><span class="day">Pull A</span><span class="day">Legs A</span>
+            <span class="day rest">Rest</span><span class="day">Push B</span><span class="day">Pull B</span>
+            <span class="day">Legs B</span><span class="day rest">Rest</span>
+          </div>
+          <div style="display:grid;gap:10px;margin-top:4px">
+            <button class="btn primary block big">Start training</button>
+            <button class="btn block">I already have an account</button>
+          </div>
+        </div>
+      </div></div>
+      <figcaption><b>Welcome</b>: entry, the cycle shown before sign-up</figcaption>
+    </figure>
+
+    <!-- 2 ── Username / onboarding ─────────────────────────────────────── -->
+    <figure class="phone">
+      <div class="device"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="osmarks"><span class="sig"></span></span></div>
+        <div class="appbar">
+          <span class="screenname">Set up</span>
+          <button class="iconbtn" aria-label="Back">&#8592;</button>
+        </div>
+        <div class="body" style="padding-top:6px">
+          <div class="progress">
+            <div class="track"><div class="fill" style="width:33%"></div></div>
+            <div class="ends"><span>Profile</span><span class="num">1 of 3</span></div>
+          </div>
+          <h2 class="screen-title" style="margin-top:6px">What should we call you?</h2>
+          <p class="sub">This is the name on your profile. You can change it later.</p>
+          <div class="field">
+            <label for="un">Username</label>
+            <input id="un" class="input" value="chetan" autocomplete="off" />
+            <p class="hint">Letters, numbers and underscores. 2–20 characters.</p>
+          </div>
+          <div class="panel" style="display:grid;gap:10px">
+            <p class="label">Preview</p>
+            <div class="previewrow">
+              <span class="avatar">C</span>
+              <span>
+                <b style="font-weight:500">chetan</b>
+                <span class="meta" style="display:block">Member since 21 Oct 2026</span>
+              </span>
+            </div>
+          </div>
+          <div style="margin-top:auto">
+            <button class="btn primary block">Continue</button>
+          </div>
+        </div>
+      </div></div>
+      <figcaption><b>Username</b>: onboarding, a real progress ratio instead of dots</figcaption>
+    </figure>
+
+    <!-- 3 ── Split Builder ─────────────────────────────────────────────── -->
+    <figure class="phone">
+      <div class="device"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="osmarks"><span class="sig"></span></span></div>
+        <div class="appbar">
+          <span class="screenname">Your split</span>
+          <button class="iconbtn" aria-label="Options">&#8943;</button>
+        </div>
+        <div class="body" style="padding-top:2px">
+          <p class="sub" style="margin-bottom:2px">8 days on a rolling loop. Drag to reorder; rest days sit wherever you put them.</p>
+          <ol class="splits">
+            <li class="split"><span class="grip" aria-hidden="true">&#8942;&#8942;</span><span class="n"><b>Push A</b><span>Bench, OHP, Incline, Lateral, Pushdown</span></span><span class="tag">5</span></li>
+            <li class="split"><span class="grip" aria-hidden="true">&#8942;&#8942;</span><span class="n"><b>Pull A</b><span>Deadlift, Row, Pulldown, Curl, Face pull</span></span><span class="tag">5</span></li>
+            <li class="split"><span class="grip" aria-hidden="true">&#8942;&#8942;</span><span class="n"><b>Legs A</b><span>Squat, RDL, Leg press, Calf, Hanging raise</span></span><span class="tag">5</span></li>
+            <li class="split"><span class="grip" aria-hidden="true">&#8942;&#8942;</span><span class="n"><b>Rest</b><span>No session</span></span><span class="tag">0</span></li>
+            <li class="split"><span class="grip" aria-hidden="true">&#8942;&#8942;</span><span class="n"><b>Push B</b><span>Incline bench, DB press, Fly, Lateral, Dips</span></span><span class="tag">5</span></li>
+            <li class="split"><span class="grip" aria-hidden="true">&#8942;&#8942;</span><span class="n"><b>Pull B</b><span>Pull-up, Row, Shrug, Curl, Rear delt</span></span><span class="tag">5</span></li>
+            <li class="split"><span class="grip" aria-hidden="true">&#8942;&#8942;</span><span class="n"><b>Legs B</b><span>Front squat, Hip thrust, Curl, Calf, Plank</span></span><span class="tag">5</span></li>
+            <li class="split"><span class="grip" aria-hidden="true">&#8942;&#8942;</span><span class="n"><b>Rest</b><span>No session</span></span><span class="tag">0</span></li>
+          </ol>
+          <div style="margin-top:auto">
+            <button class="btn primary block">Save split</button>
+          </div>
+        </div>
+      </div></div>
+      <figcaption><b>Split Builder</b>: the rolling cycle, reorderable</figcaption>
+    </figure>
+
+    <!-- 4 ── Today (core) ──────────────────────────────────────────────── -->
+    <figure class="phone">
+      <div class="device"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="osmarks"><span class="sig"></span></span></div>
+        <div class="appbar">
+          <span class="name">
+            <svg class="mark" style="width:18px;height:18px" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5M7.5 6.5v11M16.5 6.5v11M20 9.5v5M7.5 12h9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            FitForge
+          </span>
+          <button class="iconbtn" aria-label="Options">&#8943;</button>
+        </div>
+        <div class="body" style="padding-top:0">
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+            <div>
+              <h2 class="screen-title">Push A</h2>
+              <p class="sub">Today · session 3 of 8 in the cycle</p>
+            </div>
+            <button class="btn primary sm">Start</button>
+          </div>
+          <div class="cycle" aria-label="Cycle position">
+            <span class="day">Push A</span><span class="day">Pull A</span><span class="day today">Legs A</span>
+            <span class="day rest">Rest</span><span class="day">Push B</span><span class="day">Pull B</span>
+            <span class="day">Legs B</span><span class="day rest">Rest</span>
+          </div>
+          <div class="kpis">
+            <div class="kpi"><p class="kpi-label">Sets logged</p><p class="kpi-value num" style="color:var(--accent)">8<small>/16</small></p></div>
+            <div class="kpi"><p class="kpi-label">Volume today</p><p class="kpi-value num">3,190<small>kg</small></p></div>
+            <div class="kpi"><p class="kpi-label">Streak</p><p class="kpi-value num">9<small>sessions</small></p></div>
+          </div>
+          <div class="rows">
+            <div class="row">
+              <span class="grow"><span class="rname">Bench Press</span><span class="rsub num">4 × 6–8 · 70.0 kg</span></span>
+              <span class="rval num done">4/4</span>
+            </div>
+            <div class="row">
+              <span class="grow"><span class="rname">Overhead Press</span><span class="rsub num">3 × 8 · 40.0 kg</span></span>
+              <span class="rval num done">3/3</span>
+            </div>
+            <div class="row">
+              <span class="grow"><span class="rname">Incline DB Press</span><span class="rsub num">3 × 10 · 24.0 kg</span></span>
+              <span class="rval num">1/3</span>
+            </div>
+            <div class="row">
+              <span class="grow"><span class="rname">Lateral Raise</span><span class="rsub num">3 × 15 · 10.0 kg</span></span>
+              <span class="rval num meta" style="font-weight:400">0/3</span>
+            </div>
+            <div class="row">
+              <span class="grow"><span class="rname">Triceps Pushdown</span><span class="rsub num">3 × 12 · 25.0 kg</span></span>
+              <span class="rval num meta" style="font-weight:400">0/3</span>
+            </div>
+          </div>
+        </div>
+        <nav class="tabbar">
+          <a href="#" aria-current="page">Today</a><a href="#">Split</a><a href="#">Progress</a><a href="#">Profile</a>
+        </nav>
+      </div></div>
+      <figcaption><b>Today</b>: the core screen: what's next, and how much is left</figcaption>
+    </figure>
+
+    <!-- 5 ── Active workout ───────────────────────────────────────────── -->
+    <figure class="phone">
+      <div class="device"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="osmarks"><span class="sig"></span></span></div>
+        <div class="appbar">
+          <button class="iconbtn" aria-label="Back">&#8592;</button>
+          <span class="screenname">Bench Press</span>
+          <span class="meta num" style="font-weight:500">00:42</span>
+        </div>
+        <div class="body" style="padding-top:2px">
+          <p class="meta">Exercise 1 of 5 · target 4 × 6–8 · 70.0 kg</p>
+          <div class="sets">
+            <div class="set"><span class="idx num">1</span><span class="fig num">70.0 kg <small>× 8</small></span><svg class="tick" viewBox="0 0 16 16" aria-label="Done"><path d="M3 8.5l3.2 3.2L13 4.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="set"><span class="idx num">2</span><span class="fig num">70.0 kg <small>× 8</small></span><svg class="tick" viewBox="0 0 16 16" aria-label="Done"><path d="M3 8.5l3.2 3.2L13 4.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="set"><span class="idx num">3</span><span class="fig num">70.0 kg <small>× 7</small></span><svg class="tick" viewBox="0 0 16 16" aria-label="Done"><path d="M3 8.5l3.2 3.2L13 4.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="set"><span class="idx num">4</span><span class="fig num">70.0 kg <small>× 6</small></span><svg class="tick" viewBox="0 0 16 16" aria-label="Done"><path d="M3 8.5l3.2 3.2L13 4.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <div class="steppers">
+            <div class="stepper">
+              <span class="label">Weight</span>
+              <span class="rowline"><button class="iconbtn sq" aria-label="Less weight">&#8722;</button><span class="val num">70.0</span><button class="iconbtn sq" aria-label="More weight">+</button></span>
+            </div>
+            <div class="stepper">
+              <span class="label">Reps</span>
+              <span class="rowline"><button class="iconbtn sq" aria-label="Fewer reps">&#8722;</button><span class="val num">8</span><button class="iconbtn sq" aria-label="More reps">+</button></span>
+            </div>
+          </div>
+          <button class="btn primary block">Log set 5</button>
+          <div class="progress" style="margin-top:2px">
+            <div class="track"><div class="fill" style="width:100%"></div></div>
+            <div class="ends"><span>Rest 1:30</span><span class="num">next: Overhead Press</span></div>
+          </div>
+        </div>
+      </div></div>
+      <figcaption><b>Active workout</b>: mid-set logging, one thumb</figcaption>
+    </figure>
+
+    <!-- 6 ── Progress ─────────────────────────────────────────────────── -->
+    <figure class="phone">
+      <div class="device"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="osmarks"><span class="sig"></span></span></div>
+        <div class="appbar">
+          <span class="name">
+            <svg class="mark" style="width:18px;height:18px" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5M7.5 6.5v11M16.5 6.5v11M20 9.5v5M7.5 12h9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            FitForge
+          </span>
+          <button class="iconbtn" aria-label="Options">&#8943;</button>
+        </div>
+        <div class="body" style="padding-top:0">
+          <div>
+            <h2 class="screen-title">Progress</h2>
+            <p class="sub">Weekly volume, last 7 weeks. <span class="neg" style="color:var(--negative)" >Down 4.2%</span> on the week before.</p>
+          </div>
+          <div class="kpis">
+            <div class="kpi"><p class="kpi-label">This week</p><p class="kpi-value num">3<small>/5 sessions</small></p></div>
+            <div class="kpi"><p class="kpi-label">Streak</p><p class="kpi-value num">9<small>sessions</small></p></div>
+            <div class="kpi"><p class="kpi-label">Records</p><p class="kpi-value num">3<small>this cycle</small></p></div>
+          </div>
+          <div class="panel">
+            <svg class="chart" viewBox="0 0 350 178" role="img" aria-label="Weekly training volume, last seven weeks, in kilograms">
+              <line class="gridline" x1="38" y1="30"   x2="348" y2="30" />
+              <line class="gridline" x1="38" y1="66.7" x2="348" y2="66.7" />
+              <line class="gridline" x1="38" y1="103.3" x2="348" y2="103.3" />
+              <text class="axis" x="34" y="34"   text-anchor="end">15k</text>
+              <text class="axis" x="34" y="70.7" text-anchor="end">10k</text>
+              <text class="axis" x="34" y="107.3" text-anchor="end">5k</text>
+              <text class="axis" x="34" y="144"  text-anchor="end">0</text>
+              <line class="baseline" x1="38" y1="140" x2="348" y2="140" />
+              <rect class="bar" x="44"  y="65.3" width="24" height="74.7" />
+              <rect class="bar" x="89"  y="56.3" width="24" height="83.7" />
+              <rect class="bar" x="134" y="59.6" width="24" height="80.4" />
+              <rect class="bar" x="179" y="51.6" width="24" height="88.4" />
+              <rect class="bar" x="224" y="54.2" width="24" height="85.8" />
+              <rect class="bar" x="269" y="47.3" width="24" height="92.7" />
+              <rect class="bar" x="314" y="51.2" width="24" height="88.8" />
+              <text class="axis" x="44"  y="160" text-anchor="start">09-02</text>
+              <text class="axis" x="134" y="160" text-anchor="middle">09-16</text>
+              <text class="axis" x="224" y="160" text-anchor="middle">09-30</text>
+              <text class="axis" x="314" y="160" text-anchor="middle">10-14</text>
+            </svg>
+          </div>
+          <div>
+            <h3 class="label" style="margin-bottom:8px">Personal records</h3>
+            <div class="rows">
+              <div class="row"><span class="grow"><span class="rname">Bench Press</span><span class="rsub">14 Oct 2026</span></span><span class="rval num">80.0 kg</span></div>
+              <div class="row"><span class="grow"><span class="rname">Back Squat</span><span class="rsub">30 Sep 2026</span></span><span class="rval num">110.0 kg</span></div>
+              <div class="row"><span class="grow"><span class="rname">Deadlift</span><span class="rsub">23 Sep 2026</span></span><span class="rval num">140.0 kg</span></div>
+            </div>
+          </div>
+        </div>
+        <nav class="tabbar">
+          <a href="#">Today</a><a href="#">Split</a><a href="#" aria-current="page">Progress</a><a href="#">Profile</a>
+        </nav>
+      </div></div>
+      <figcaption><b>Progress</b>: volume over time, one hue on the data</figcaption>
+    </figure>
+
+  </div>
+</main>
+
+<script>
+  document.querySelectorAll("[data-set-theme]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var t = btn.getAttribute("data-set-theme");
+      document.documentElement.setAttribute("data-theme", t);
+      document.querySelectorAll("[data-set-theme]").forEach(function (b) {
+        b.setAttribute("aria-pressed", String(b === btn));
+      });
+    });
+  });
+</script>
+</body>
+</html>

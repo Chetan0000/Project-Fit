@@ -1,0 +1,48 @@
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+*.log
+
+# macOS
+.DS_Store
+
+# editors
+.vscode/
+.idea/
+
+# Env
+.env*.local
+
+# TypeScript
+*.tsbuildinfo
+
+# local db / drizzle output (added in later steps)
+drizzle/
+*.sqlite
+
+# agent tooling / machine-local config
+.agents/
+.commandcode/
+.taste-skill/
+skills-lock.json

@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "FitForge",
+    "slug": "fitforge",
+    "version": "1.0.0",
+    "scheme": "fitforge",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "backgroundColor": "#000000",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.chetan.fitforge"
+    },
+    "android": {
+      "package": "com.chetan.fitforge",
+      "edgeToEdgeEnabled": true
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#000000",
+          "resizeMode": "contain"
+        }
+      ]
+    ]
+  }
+}
